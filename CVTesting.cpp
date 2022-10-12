@@ -1,9 +1,17 @@
 #include <iostream>
-#include "opencv2/core/core.hpp"
-#include "opencv2/highgui/highgui.hpp"
-#include "opencv2/opencv.hpp"
+#include "core.h"
+
+using namespace cv;
+using namespace extensions;
 
 int main()
 {
-    std::cout << "Hello World!\n";
+    Mat imgRgb = imread("content\\1.jpg");
+
+    // CV_8UC1 creates matrix with 1 value for each pixel (for greyscale and binary)
+    // CV_8UC3 creates matrix with 3 values for each pixel (for rgb)
+    Mat imgGrey = RGB2R(imgRgb);
+    
+    imshow("Grey Image", imgGrey);
+    waitKey();
 }
