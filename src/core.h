@@ -143,4 +143,32 @@ namespace extensions
 
         return img;
     }
+
+    Mat BoxBlur(Mat img, int radius = 3)
+    {
+        Mat blurred = Mat::zeros(img.size(), CV_8UC1);
+
+        int size = (radius * 2) + 1;
+        int range = (size - 1) / 2;
+        int neighbours = size * size;
+
+        for (int i = range; i < img.rows - range; i++)
+        {
+            for (int j = range; j < img.cols - range; j++)
+            {
+                int sum = 0;
+                for (int x = -range; x <= range; x++)
+                {
+                    for (int y = -range; y <= range; y++)
+                    {
+                        int value = img.at<uchar>(i + x, j + y);
+                        sum += value;
+                    }
+                }
+                int average = sum / neighbours;
+                blurred.at<uchar>(i, j) = average;
+            }
+        }
+        return blurred;
+    }
 };
