@@ -7,11 +7,17 @@ using namespace extensions;
 int main()
 {
     Mat imgRgb = imread("content\\1.jpg");
+    Mat imgGrey = RgbToGrey(imgRgb);
+    Mat imgBinary = GreyToBinary(imgGrey);
 
-    // CV_8UC1 creates matrix with 1 value for each pixel (for greyscale and binary)
-    // CV_8UC3 creates matrix with 3 values for each pixel (for rgb)
-    Mat imgGrey = RGB2R(imgRgb);
-    
-    imshow("Grey Image", imgGrey);
+    imshow("RGB", imgRgb);
+    imshow("Grey", imgGrey);
+    imshow("Binary", imgBinary);
+    imshow("Inverted Grey", Invert(imgGrey));
+    imshow("Inverted Binary", Invert(imgBinary));
+    imshow("Stepped Grey", Step(imgGrey, 200));
+    imshow("Averaged", Average(imgGrey, 3));
+
+    std::cout << imgBinary.cols << std::endl;
     waitKey();
 }
