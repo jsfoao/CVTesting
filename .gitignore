@@ -348,3 +348,6 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+
+# Ignore this dll from Tesseract-OCR, too big for Git
+tesseract-ocr/libtesseract-5.dll
