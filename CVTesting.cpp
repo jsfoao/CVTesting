@@ -7,7 +7,7 @@ using namespace cvext;
 int main()
 {
     tesseract::TessBaseAPI* tess = new tesseract::TessBaseAPI();
-    if (tess->Init("C:\\Program Files\\Tesseract-OCR\\tessdata", "eng"))
+    if (tess->Init("tesseract-ocr\\tessdata", "eng"))
     {
         std::cout << "Could not initialize tesseract!" << std::endl;
         exit(1);
