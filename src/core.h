@@ -4,6 +4,7 @@
 #include "opencv2/opencv.hpp"
 #include "vcpkg/tesseract/baseapi.h"
 #include "vcpkg/leptonica/allheaders.h"
+#include <random>
 
 
 using namespace cv;
@@ -97,7 +98,7 @@ namespace cvext
         {
             for (int j = 0; j < img.cols; j++)
             {
-                output.at<uchar>(i, j) = 255.f - img.at<uchar>(i, j);
+                output.at<uchar>(i, j) = 255 - img.at<uchar>(i, j);
             }
         }
 
@@ -239,6 +240,59 @@ namespace cvext
                     output.at<uchar>(i, j) = 255;
             }
         }
+        return output;
+    }
+
+    Mat NearestNeighbour(Mat img, int scale)
+    {
+        Size size(img.rows * scale, img.cols * scale);
+        Mat output = Mat::zeros(size, CV_8UC1);
+
+        for (int i = 0; i < img.rows; i++)
+        {
+            for (int j = 0; j < img.cols; j++)
+            {
+
+            }
+        }
+        return output;
+    }
+
+    Mat RandomGrey(Size size, int min = 0, int max = 255)
+    {
+        std::random_device rd;
+        std::mt19937 rng(rd());
+        std::uniform_int_distribution<int> uni(min, max);
+
+        Mat output = Mat::zeros(size, CV_8UC1);
+
+        for (int i = 0; i < output.rows; i++)
+        {
+            for (int j = 0; j < output.cols; j++)
+            {
+                output.at<uchar>(i, j) = uni(rng);
+            }
+        }
+
+        return output;
+    }
+
+    Mat RandomRGB(Size size, int min = 0, int max = 255)
+    {
+        std::random_device rd;
+        std::mt19937 rng(rd());
+        std::uniform_int_distribution<int> uni(min, max);
+
+        Mat output = Mat::zeros(size, CV_8UC3);
+
+        for (int i = 0; i < output.rows; i++)
+        {
+            for (int j = 0; j < output.cols * 3; j++)
+            {
+                output.at<uchar>(i, j) = uni(rng);
+            }
+        }
+
         return output;
     }
 };
