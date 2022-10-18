@@ -215,7 +215,7 @@ namespace cvext
         return output;
     }
 
-    Mat Edge(Mat img, int th, int size = 3)
+    Mat VerticalEdge(Mat img, int th, int size = 3)
     {
         Mat output = Mat::zeros(img.size(), CV_8UC1);
 
@@ -243,18 +243,181 @@ namespace cvext
         return output;
     }
 
-    Mat NearestNeighbour(Mat img, int scale)
+    Mat HorizontalEdge(Mat img, int th, int size = 3)
     {
-        Size size(img.rows * scale, img.cols * scale);
-        Mat output = Mat::zeros(size, CV_8UC1);
+        Mat output = Mat::zeros(img.size(), CV_8UC1);
+
+        int range = (size - 1) / 2;
+        for (int i = range; i < img.rows - range; i++)
+        {
+            for (int j = 1; j < img.cols - 1; j++)
+            {
+                int sumL = 0;
+                int sumR = 0;
+                int count = 0;
+                for (int jj = -range; jj <= range; jj++)
+                {
+                    sumL += img.at<uchar>(i - 1, j + jj);
+                    sumR += img.at<uchar>(i + 1, j + jj);
+                    count++;
+                }
+
+                int avgL = sumL / count;
+                int avgR = sumR / count;
+                if (abs(avgL - avgR) > th)
+                    output.at<uchar>(i, j) = 255;
+            }
+        }
+        return output;
+    }
+
+    Mat Dilation(Mat img, int range = 1)
+    {
+        Mat output = Mat::zeros(img.size(), CV_8UC1);
+
+        for (int i = range; i < img.rows - range; i++)
+        {
+            for (int j = range; j < img.cols - range; j++)
+            {
+                // skip if pixel is already white
+                if (img.at<uchar>(i, j) == 255)
+                {
+                    output.at<uchar>(i, j) = 255;
+                    continue;
+                }
+
+                for (int ii = -range; ii <= range; ii++)
+                {
+                    for (int jj = -range; jj <= range; jj++)
+                    {
+                        int value = img.at<uchar>(i + ii, j + jj);
+
+                        // make pixel white if it has white neighbours
+                        if (value == 255)
+                        {
+                            output.at<uchar>(i, j) = 255;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return output;
+    }
+
+    Mat Erosion(Mat img, int range = 1)
+    {
+        Mat output = Mat::zeros(img.size(), CV_8UC1);
+
+        for (int i = range; i < img.rows - range; i++)
+        {
+            for (int j = range; j < img.cols - range; j++)
+            {
+                // skip if pixel is already black
+                if (img.at<uchar>(i, j) == 0)
+                    continue;
+
+                output.at<uchar>(i, j) = 255;
+                for (int ii = -range; ii <= range; ii++)
+                {
+                    for (int jj = -range; jj <= range; jj++)
+                    {
+                        int value = img.at<uchar>(i + ii, j + jj);
+
+                        // make pixel black if it has black neighbours
+                        if (value == 0)
+                        {
+                            output.at<uchar>(i, j) = 0;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return output;
+    }
+
+    #define NULL 0
+
+    struct Pixel
+    {
+        int Value;
+        int ID;
+
+        Pixel(int value, int id)
+        {
+            Value = value;
+            ID = id;
+        }
+    };
+
+
+    Mat Segmentation(Mat img)
+    {
+        Mat ID = Mat::zeros(img.size(), CV_8UC1);
+
+        int id = 1;
+        for (int i = 1; i < img.rows - 1; i++)
+        {
+            for (int j = 1; j < img.cols - 1; j++)
+            {
+                // skip if pixel is black
+                if (img.at<uchar>(i, j) == 0)
+                    continue;
+
+                Pixel lPix(img.at<uchar>(i, j - 1), ID.at<uchar>(i, j - 1));
+                Pixel tPix(img.at<uchar>(i - 1, j), ID.at<uchar>(i - 1, j));
+
+                if (lPix.ID == NULL && tPix.ID == NULL)
+                {
+                    ID.at<uchar>(i, j) = id;
+                    id++;
+                }
+
+                if (lPix.ID != NULL && tPix.ID == NULL)
+                {
+                    ID.at<uchar>(i, j) = lPix.ID;
+                }
+                
+                if (lPix.ID == NULL && tPix.ID != NULL)
+                {
+                    ID.at<uchar>(i, j) = tPix.ID;
+                }
+
+                if (lPix.ID != NULL && tPix.ID != NULL)
+                {
+                    if (lPix.ID <= tPix.ID)
+                    {
+                        ID.at<uchar>(i, j) = lPix.ID;
+                    }
+                    else if (tPix.ID < lPix.ID)
+                    {
+                        ID.at<uchar>(i, j) = tPix.ID;
+                    }
+                }
+            }
+        }
+
+        std::cout << "Unique IDs: " << id - 1 << std::endl;
+
+        return ID;
+    }
+
+    Mat IDToGrey(Mat img)
+    {
+        Mat output = Mat::zeros(img.size(), CV_8UC1);
 
         for (int i = 0; i < img.rows; i++)
         {
             for (int j = 0; j < img.cols; j++)
             {
-
+                if (img.at<uchar>(i, j) != NULL)
+                {
+                    output.at<uchar>(i, j) = img.at<uchar>(i, j) * 25;
+                }
             }
         }
+
         return output;
     }
 
