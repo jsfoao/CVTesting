@@ -5,8 +5,9 @@
 #include "vcpkg/tesseract/baseapi.h"
 #include "vcpkg/leptonica/allheaders.h"
 #include <random>
+#include <vector>
 
-
+using namespace std;
 using namespace cv;
 
 namespace cvext
@@ -90,15 +91,15 @@ namespace cvext
         return output;
     }
 
-    Mat Invert(Mat img)
+    Mat Invert(Mat imgBin)
     {
-        Mat output = Mat::zeros(img.size(), CV_8UC1);
+        Mat output = Mat::zeros(imgBin.size(), CV_8UC1);
 
-        for (int i = 0; i < img.rows; i++)
+        for (int i = 0; i < imgBin.rows; i++)
         {
-            for (int j = 0; j < img.cols; j++)
+            for (int j = 0; j < imgBin.cols; j++)
             {
-                output.at<uchar>(i, j) = 255 - img.at<uchar>(i, j);
+                output.at<uchar>(i, j) = 255 - imgBin.at<uchar>(i, j);
             }
         }
 
@@ -108,15 +109,15 @@ namespace cvext
     /*
     th1 exclusive, th2 inclusive
     */
-    Mat Step(Mat img, int th1, int th2 = 255)
+    Mat Step(Mat imgBin, int th1, int th2 = 255)
     {
-        Mat output = Mat::zeros(img.size(), CV_8UC1);
+        Mat output = Mat::zeros(imgBin.size(), CV_8UC1);
 
-        for (int i = 0; i < img.rows; i++)
+        for (int i = 0; i < imgBin.rows; i++)
         {
-            for (int j = 0; j < img.cols; j++)
+            for (int j = 0; j < imgBin.cols; j++)
             {
-                uchar val = img.at<uchar>(i, j);
+                uchar val = imgBin.at<uchar>(i, j);
                 if (val > th1 && val <= th2)
                     output.at<uchar>(i, j) = 255;
             }
@@ -125,9 +126,9 @@ namespace cvext
         return output;
     }
 
-    Mat Average(Mat img, int radius = 3)
+    Mat Average(Mat imgBin, int radius = 3)
     {
-        Mat output = Mat::zeros(img.size(), CV_8UC1);
+        Mat output = Mat::zeros(imgBin.size(), CV_8UC1);
 
         // ensures valid sizes
         int size = (radius * 2) + 1;
@@ -135,16 +136,16 @@ namespace cvext
         int range = (size - 1) / 2;
         int pixels = pow((2 * range) + 1, 2);
 
-        for (int i = range; i < img.rows - range; i++)
+        for (int i = range; i < imgBin.rows - range; i++)
         {
-            for (int j = range; j < img.cols - range; j++)
+            for (int j = range; j < imgBin.cols - range; j++)
             {
                 int sum = 0;
                 for (int ii = -range; ii <= range; ii++)
                 {
                     for (int jj = -range; jj <= range; jj++)
                     {
-                        int value = img.at<uchar>(i + ii, j + jj);
+                        int value = imgBin.at<uchar>(i + ii, j + jj);
                         sum += value;
                     }
                 }
@@ -155,9 +156,9 @@ namespace cvext
         return output;
     }
 
-    Mat Max(Mat img, int radius = 3)
+    Mat Max(Mat imgBin, int radius = 3)
     {
-        Mat output = Mat::zeros(img.size(), CV_8UC1);
+        Mat output = Mat::zeros(imgBin.size(), CV_8UC1);
 
         // ensures valid sizes
         int size = (radius * 2) + 1;
@@ -165,16 +166,16 @@ namespace cvext
         int range = (size - 1) / 2;
         int pixels = pow((2 * range) + 1, 2);
 
-        for (int i = range; i < img.rows - range; i++)
+        for (int i = range; i < imgBin.rows - range; i++)
         {
-            for (int j = range; j < img.cols - range; j++)
+            for (int j = range; j < imgBin.cols - range; j++)
             {
                 int max = 0;
                 for (int ii = -range; ii <= range; ii++)
                 {
                     for (int jj = -range; jj <= range; jj++)
                     {
-                        int value = img.at<uchar>(i + ii, j + jj);
+                        int value = imgBin.at<uchar>(i + ii, j + jj);
                         if (value > max)
                             max = value;
                     }
@@ -185,9 +186,9 @@ namespace cvext
         return output;
     }
 
-    Mat Min(Mat img, int radius = 3)
+    Mat Min(Mat imgBin, int radius = 3)
     {
-        Mat output = Mat::zeros(img.size(), CV_8UC1);
+        Mat output = Mat::zeros(imgBin.size(), CV_8UC1);
 
         // ensures valid sizes
         int size = (radius * 2) + 1;
@@ -195,16 +196,16 @@ namespace cvext
         int range = (size - 1) / 2;
         int pixels = pow((2 * range) + 1, 2);
 
-        for (int i = range; i < img.rows - range; i++)
+        for (int i = range; i < imgBin.rows - range; i++)
         {
-            for (int j = range; j < img.cols - range; j++)
+            for (int j = range; j < imgBin.cols - range; j++)
             {
                 int min = 255;
                 for (int ii = -range; ii <= range; ii++)
                 {
                     for (int jj = -range; jj <= range; jj++)
                     {
-                        int value = img.at<uchar>(i + ii, j + jj);
+                        int value = imgBin.at<uchar>(i + ii, j + jj);
                         if (value < min)
                             min = value;
                     }
@@ -215,22 +216,22 @@ namespace cvext
         return output;
     }
 
-    Mat VerticalEdge(Mat img, int th, int size = 3)
+    Mat Edge(Mat imgBin, int th, int size = 3)
     {
-        Mat output = Mat::zeros(img.size(), CV_8UC1);
+        Mat output = Mat::zeros(imgBin.size(), CV_8UC1);
 
         int range = (size - 1) / 2;
-        for (int i = range; i < img.rows - range; i++)
+        for (int i = range; i < imgBin.rows - range; i++)
         {
-            for (int j = 1; j < img.cols - 1; j++)
+            for (int j = 1; j < imgBin.cols - 1; j++)
             {
                 int sumL = 0;
                 int sumR = 0;
                 int count = 0;
                 for (int ii = -range; ii <= range; ii++)
                 {
-                    sumL += img.at<uchar>(i + ii, j - 1);
-                    sumR += img.at<uchar>(i + ii, j + 1);
+                    sumL += imgBin.at<uchar>(i + ii, j - 1);
+                    sumR += imgBin.at<uchar>(i + ii, j + 1);
                     count++;
                 }
 
@@ -243,44 +244,16 @@ namespace cvext
         return output;
     }
 
-    Mat HorizontalEdge(Mat img, int th, int size = 3)
+    Mat Dilation(Mat imgBin, int range = 1)
     {
-        Mat output = Mat::zeros(img.size(), CV_8UC1);
+        Mat output = Mat::zeros(imgBin.size(), CV_8UC1);
 
-        int range = (size - 1) / 2;
-        for (int i = range; i < img.rows - range; i++)
+        for (int i = range; i < imgBin.rows - range; i++)
         {
-            for (int j = 1; j < img.cols - 1; j++)
-            {
-                int sumL = 0;
-                int sumR = 0;
-                int count = 0;
-                for (int jj = -range; jj <= range; jj++)
-                {
-                    sumL += img.at<uchar>(i - 1, j + jj);
-                    sumR += img.at<uchar>(i + 1, j + jj);
-                    count++;
-                }
-
-                int avgL = sumL / count;
-                int avgR = sumR / count;
-                if (abs(avgL - avgR) > th)
-                    output.at<uchar>(i, j) = 255;
-            }
-        }
-        return output;
-    }
-
-    Mat Dilation(Mat img, int range = 1)
-    {
-        Mat output = Mat::zeros(img.size(), CV_8UC1);
-
-        for (int i = range; i < img.rows - range; i++)
-        {
-            for (int j = range; j < img.cols - range; j++)
+            for (int j = range; j < imgBin.cols - range; j++)
             {
                 // skip if pixel is already white
-                if (img.at<uchar>(i, j) == 255)
+                if (imgBin.at<uchar>(i, j) == 255)
                 {
                     output.at<uchar>(i, j) = 255;
                     continue;
@@ -290,7 +263,7 @@ namespace cvext
                 {
                     for (int jj = -range; jj <= range; jj++)
                     {
-                        int value = img.at<uchar>(i + ii, j + jj);
+                        int value = imgBin.at<uchar>(i + ii, j + jj);
 
                         // make pixel white if it has white neighbours
                         if (value == 255)
@@ -305,16 +278,47 @@ namespace cvext
         return output;
     }
 
-    Mat Erosion(Mat img, int range = 1)
+    Mat HorizontalDilation(Mat imgBin, int range = 1)
     {
-        Mat output = Mat::zeros(img.size(), CV_8UC1);
+        Mat output = Mat::zeros(imgBin.size(), CV_8UC1);
 
-        for (int i = range; i < img.rows - range; i++)
+        for (int i = range; i < imgBin.rows - range; i++)
         {
-            for (int j = range; j < img.cols - range; j++)
+            for (int j = range; j < imgBin.cols - range; j++)
+            {
+                // skip if pixel is already white
+                if (imgBin.at<uchar>(i, j) == 255)
+                {
+                    output.at<uchar>(i, j) = 255;
+                    continue;
+                }
+
+                for (int jj = -range; jj <= range; jj++)
+                {
+                    int value = imgBin.at<uchar>(i, j + jj);
+
+                    // make pixel white if it has white horizontal neighbours
+                    if (value == 255)
+                    {
+                        output.at<uchar>(i, j) = 255;
+                        break;
+                    }
+                }
+            }
+        }
+        return output;
+    }
+
+    Mat Erosion(Mat imgBin, int range = 1)
+    {
+        Mat output = Mat::zeros(imgBin.size(), CV_8UC1);
+
+        for (int i = range; i < imgBin.rows - range; i++)
+        {
+            for (int j = range; j < imgBin.cols - range; j++)
             {
                 // skip if pixel is already black
-                if (img.at<uchar>(i, j) == 0)
+                if (imgBin.at<uchar>(i, j) == 0)
                     continue;
 
                 output.at<uchar>(i, j) = 255;
@@ -322,7 +326,7 @@ namespace cvext
                 {
                     for (int jj = -range; jj <= range; jj++)
                     {
-                        int value = img.at<uchar>(i + ii, j + jj);
+                        int value = imgBin.at<uchar>(i + ii, j + jj);
 
                         // make pixel black if it has black neighbours
                         if (value == 0)
@@ -335,6 +339,44 @@ namespace cvext
             }
         }
         return output;
+    }
+
+    Mat ColorErosion(Mat* dilated)
+    {
+        Mat DilatedImgCpy;
+        DilatedImgCpy = dilated->clone();
+
+        std::vector<std::vector<Point>> contours1;
+        vector<Vec4i> hierachy1;
+
+        findContours(*dilated, contours1, hierachy1, RETR_EXTERNAL, CHAIN_APPROX_NONE, Point(0, 0));
+        Mat dst = Mat::zeros(dilated->size(), CV_8UC3);
+
+        if (!contours1.empty())
+        {
+            for (int i = 0; i < contours1.size(); i++)
+            {
+                Scalar colour((rand() & 255), (rand() & 255), (rand() & 255));
+                drawContours(dst, contours1, i, colour, -1, 8, hierachy1);
+            }
+        }
+
+        Rect rect;
+        Scalar black = CV_RGB(0, 0, 0);
+
+        for (int i = 0; i < contours1.size(); i++)
+        {
+            rect = boundingRect(contours1[i]);
+            float ratio = float(rect.width) / float(rect.height);
+
+            if (rect.width < 40 || rect.height > 100 || rect.width > 150 || rect.x < 0.1 * dilated->cols || rect.x > 0.9 * dilated->cols ||
+                rect.y < 0.1 * dilated->rows || rect.y > 0.9 * dilated->rows || ratio < 1.5)
+            {
+                drawContours(DilatedImgCpy, contours1, i, black, -1, 8, hierachy1);
+            }
+        }
+
+        return DilatedImgCpy;
     }
 
     #define NULL 0
@@ -352,21 +394,21 @@ namespace cvext
     };
 
 
-    Mat Segmentation(Mat img)
+    Mat Segmentation(Mat imgBin)
     {
-        Mat ID = Mat::zeros(img.size(), CV_8UC1);
+        Mat ID = Mat::zeros(imgBin.size(), CV_8UC1);
 
         int id = 1;
-        for (int i = 1; i < img.rows - 1; i++)
+        for (int i = 1; i < imgBin.rows - 1; i++)
         {
-            for (int j = 1; j < img.cols - 1; j++)
+            for (int j = 1; j < imgBin.cols - 1; j++)
             {
-                // skip if pixel is black
-                if (img.at<uchar>(i, j) == 0)
+                // Iterate through white pixels only
+                if (imgBin.at<uchar>(i, j) == 0)
                     continue;
 
-                Pixel lPix(img.at<uchar>(i, j - 1), ID.at<uchar>(i, j - 1));
-                Pixel tPix(img.at<uchar>(i - 1, j), ID.at<uchar>(i - 1, j));
+                Pixel lPix(imgBin.at<uchar>(i, j - 1), ID.at<uchar>(i, j - 1));
+                Pixel tPix(imgBin.at<uchar>(i - 1, j), ID.at<uchar>(i - 1, j));
 
                 if (lPix.ID == NULL && tPix.ID == NULL)
                 {
@@ -403,17 +445,17 @@ namespace cvext
         return ID;
     }
 
-    Mat IDToGrey(Mat img)
+    Mat IDToGrey(Mat imgBin)
     {
-        Mat output = Mat::zeros(img.size(), CV_8UC1);
+        Mat output = Mat::zeros(imgBin.size(), CV_8UC1);
 
-        for (int i = 0; i < img.rows; i++)
+        for (int i = 0; i < imgBin.rows; i++)
         {
-            for (int j = 0; j < img.cols; j++)
+            for (int j = 0; j < imgBin.cols; j++)
             {
-                if (img.at<uchar>(i, j) != NULL)
+                if (imgBin.at<uchar>(i, j) != NULL)
                 {
-                    output.at<uchar>(i, j) = img.at<uchar>(i, j) * 25;
+                    output.at<uchar>(i, j) = imgBin.at<uchar>(i, j) * 25;
                 }
             }
         }
@@ -457,5 +499,24 @@ namespace cvext
         }
 
         return output;
+    }
+
+    float FillRatio(Mat imgBin)
+    {
+        int num = 0;
+        int total = imgBin.rows * imgBin.cols;
+
+        for (int i = 0; i < imgBin.rows; i++)
+        {
+            for (int j = 0; j < imgBin.cols; j++)
+            {
+                int value = imgBin.at<uchar>(i, j);
+                if (value == 255)
+                {
+                    num++;
+                }
+            }
+        }
+        return (float)num / (float)total;
     }
 };

@@ -496,7 +496,7 @@ public:
     @param padding Padding
     @param locations Vector of Point
     */
-    CV_WRAP virtual void compute(InputArray img,
+    CV_WRAP virtual void compute(InputArray imgBin,
                          CV_OUT std::vector<float>& descriptors,
                          Size winStride = Size(), Size padding = Size(),
                          const std::vector<Point>& locations = std::vector<Point>()) const;
@@ -512,7 +512,7 @@ public:
     @param padding Padding
     @param searchLocations Vector of Point includes set of requested locations to be evaluated.
     */
-    CV_WRAP virtual void detect(InputArray img, CV_OUT std::vector<Point>& foundLocations,
+    CV_WRAP virtual void detect(InputArray imgBin, CV_OUT std::vector<Point>& foundLocations,
                         CV_OUT std::vector<double>& weights,
                         double hitThreshold = 0, Size winStride = Size(),
                         Size padding = Size(),
@@ -528,7 +528,7 @@ public:
     @param padding Padding
     @param searchLocations Vector of Point includes locations to search.
     */
-    virtual void detect(InputArray img, CV_OUT std::vector<Point>& foundLocations,
+    virtual void detect(InputArray imgBin, CV_OUT std::vector<Point>& foundLocations,
                         double hitThreshold = 0, Size winStride = Size(),
                         Size padding = Size(),
                         const std::vector<Point>& searchLocations=std::vector<Point>()) const;
@@ -548,7 +548,7 @@ public:
     by many rectangles. 0 means not to perform grouping.
     @param useMeanshiftGrouping indicates grouping algorithm
     */
-    CV_WRAP virtual void detectMultiScale(InputArray img, CV_OUT std::vector<Rect>& foundLocations,
+    CV_WRAP virtual void detectMultiScale(InputArray imgBin, CV_OUT std::vector<Rect>& foundLocations,
                                   CV_OUT std::vector<double>& foundWeights, double hitThreshold = 0,
                                   Size winStride = Size(), Size padding = Size(), double scale = 1.05,
                                   double groupThreshold = 2.0, bool useMeanshiftGrouping = false) const;
@@ -567,7 +567,7 @@ public:
     by many rectangles. 0 means not to perform grouping.
     @param useMeanshiftGrouping indicates grouping algorithm
     */
-    virtual void detectMultiScale(InputArray img, CV_OUT std::vector<Rect>& foundLocations,
+    virtual void detectMultiScale(InputArray imgBin, CV_OUT std::vector<Rect>& foundLocations,
                                   double hitThreshold = 0, Size winStride = Size(),
                                   Size padding = Size(), double scale = 1.05,
                                   double groupThreshold = 2.0, bool useMeanshiftGrouping = false) const;
@@ -579,7 +579,7 @@ public:
     @param paddingTL Padding from top-left
     @param paddingBR Padding from bottom-right
     */
-    CV_WRAP virtual void computeGradient(InputArray img, InputOutputArray grad, InputOutputArray angleOfs,
+    CV_WRAP virtual void computeGradient(InputArray imgBin, InputOutputArray grad, InputOutputArray angleOfs,
                                  Size paddingTL = Size(), Size paddingBR = Size()) const;
 
     /** @brief Returns coefficients of the classifier trained for people detection (for 64x128 windows).
@@ -648,7 +648,7 @@ public:
     @param winStride winStride
     @param padding padding
     */
-    virtual void detectROI(InputArray img, const std::vector<cv::Point> &locations,
+    virtual void detectROI(InputArray imgBin, const std::vector<cv::Point> &locations,
                                    CV_OUT std::vector<cv::Point>& foundLocations, CV_OUT std::vector<double>& confidences,
                                    double hitThreshold = 0, cv::Size winStride = Size(),
                                    cv::Size padding = Size()) const;
@@ -661,7 +661,7 @@ public:
     in the detector coefficients (as the last free coefficient). But if the free coefficient is omitted (which is allowed), you can specify it manually here.
     @param groupThreshold Minimum possible number of rectangles minus 1. The threshold is used in a group of rectangles to retain it.
     */
-    virtual void detectMultiScaleROI(InputArray img,
+    virtual void detectMultiScaleROI(InputArray imgBin,
                                      CV_OUT std::vector<cv::Rect>& foundLocations,
                                      std::vector<DetectionROI>& locations,
                                      double hitThreshold = 0,
@@ -764,7 +764,7 @@ public:
      @param img grayscale or color (BGR) image containing (or not) QR code.
      @param points Output vector of vertices of the minimum-area quadrangle containing the code.
      */
-    CV_WRAP bool detect(InputArray img, OutputArray points) const;
+    CV_WRAP bool detect(InputArray imgBin, OutputArray points) const;
 
     /** @brief Decodes QR code in image once it's found by the detect() method.
 
@@ -773,7 +773,7 @@ public:
      @param points Quadrangle vertices found by detect() method (or some other algorithm).
      @param straight_qrcode The optional output image containing rectified and binarized QR code
      */
-    CV_WRAP std::string decode(InputArray img, InputArray points, OutputArray straight_qrcode = noArray());
+    CV_WRAP std::string decode(InputArray imgBin, InputArray points, OutputArray straight_qrcode = noArray());
 
     /** @brief Decodes QR code on a curved surface in image once it's found by the detect() method.
 
@@ -782,7 +782,7 @@ public:
      @param points Quadrangle vertices found by detect() method (or some other algorithm).
      @param straight_qrcode The optional output image containing rectified and binarized QR code
      */
-    CV_WRAP cv::String decodeCurved(InputArray img, InputArray points, OutputArray straight_qrcode = noArray());
+    CV_WRAP cv::String decodeCurved(InputArray imgBin, InputArray points, OutputArray straight_qrcode = noArray());
 
     /** @brief Both detects and decodes QR code
 
@@ -790,7 +790,7 @@ public:
      @param points optional output array of vertices of the found QR code quadrangle. Will be empty if not found.
      @param straight_qrcode The optional output image containing rectified and binarized QR code
      */
-    CV_WRAP std::string detectAndDecode(InputArray img, OutputArray points=noArray(),
+    CV_WRAP std::string detectAndDecode(InputArray imgBin, OutputArray points=noArray(),
                                         OutputArray straight_qrcode = noArray());
 
     /** @brief Both detects and decodes QR code on a curved surface
@@ -799,7 +799,7 @@ public:
      @param points optional output array of vertices of the found QR code quadrangle. Will be empty if not found.
      @param straight_qrcode The optional output image containing rectified and binarized QR code
      */
-    CV_WRAP std::string detectAndDecodeCurved(InputArray img, OutputArray points=noArray(),
+    CV_WRAP std::string detectAndDecodeCurved(InputArray imgBin, OutputArray points=noArray(),
                                               OutputArray straight_qrcode = noArray());
 
     /** @brief Detects QR codes in image and returns the vector of the quadrangles containing the codes.
@@ -807,7 +807,7 @@ public:
      @param points Output vector of vector of vertices of the minimum-area quadrangle containing the codes.
      */
     CV_WRAP
-    bool detectMulti(InputArray img, OutputArray points) const;
+    bool detectMulti(InputArray imgBin, OutputArray points) const;
 
     /** @brief Decodes QR codes in image once it's found by the detect() method.
      @param img grayscale or color (BGR) image containing QR codes.
@@ -817,7 +817,7 @@ public:
      */
     CV_WRAP
     bool decodeMulti(
-            InputArray img, InputArray points,
+            InputArray imgBin, InputArray points,
             CV_OUT std::vector<std::string>& decoded_info,
             OutputArrayOfArrays straight_qrcode = noArray()
     ) const;
@@ -830,7 +830,7 @@ public:
     */
     CV_WRAP
     bool detectAndDecodeMulti(
-            InputArray img, CV_OUT std::vector<std::string>& decoded_info,
+            InputArray imgBin, CV_OUT std::vector<std::string>& decoded_info,
             OutputArray points = noArray(),
             OutputArrayOfArrays straight_qrcode = noArray()
     ) const;

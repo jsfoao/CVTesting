@@ -3433,7 +3433,7 @@ that the result can be refined with further calls with mode==#GC_INIT_WITH_MASK 
 mode==GC_EVAL .
 @param mode Operation mode that could be one of the #GrabCutModes
  */
-CV_EXPORTS_W void grabCut( InputArray img, InputOutputArray mask, Rect rect,
+CV_EXPORTS_W void grabCut( InputArray imgBin, InputOutputArray mask, Rect rect,
                            InputOutputArray bgdModel, InputOutputArray fgdModel,
                            int iterCount, int mode = GC_EVAL );
 
@@ -4444,7 +4444,7 @@ lines are drawn using Gaussian filtering.
 @param lineType Type of the line. See #LineTypes.
 @param shift Number of fractional bits in the point coordinates.
  */
-CV_EXPORTS_W void line(InputOutputArray img, Point pt1, Point pt2, const Scalar& color,
+CV_EXPORTS_W void line(InputOutputArray imgBin, Point pt1, Point pt2, const Scalar& color,
                      int thickness = 1, int lineType = LINE_8, int shift = 0);
 
 /** @brief Draws an arrow segment pointing from the first point to the second one.
@@ -4460,7 +4460,7 @@ The function cv::arrowedLine draws an arrow between pt1 and pt2 points in the im
 @param shift Number of fractional bits in the point coordinates.
 @param tipLength The length of the arrow tip in relation to the arrow length
  */
-CV_EXPORTS_W void arrowedLine(InputOutputArray img, Point pt1, Point pt2, const Scalar& color,
+CV_EXPORTS_W void arrowedLine(InputOutputArray imgBin, Point pt1, Point pt2, const Scalar& color,
                      int thickness=1, int line_type=8, int shift=0, double tipLength=0.1);
 
 /** @brief Draws a simple, thick, or filled up-right rectangle.
@@ -4477,7 +4477,7 @@ mean that the function has to draw a filled rectangle.
 @param lineType Type of the line. See #LineTypes
 @param shift Number of fractional bits in the point coordinates.
  */
-CV_EXPORTS_W void rectangle(InputOutputArray img, Point pt1, Point pt2,
+CV_EXPORTS_W void rectangle(InputOutputArray imgBin, Point pt1, Point pt2,
                           const Scalar& color, int thickness = 1,
                           int lineType = LINE_8, int shift = 0);
 
@@ -4486,7 +4486,7 @@ CV_EXPORTS_W void rectangle(InputOutputArray img, Point pt1, Point pt2,
 use `rec` parameter as alternative specification of the drawn rectangle: `r.tl() and
 r.br()-Point(1,1)` are opposite corners
 */
-CV_EXPORTS_W void rectangle(InputOutputArray img, Rect rec,
+CV_EXPORTS_W void rectangle(InputOutputArray imgBin, Rect rec,
                           const Scalar& color, int thickness = 1,
                           int lineType = LINE_8, int shift = 0);
 
@@ -4506,7 +4506,7 @@ mean that a filled circle is to be drawn.
 @param lineType Type of the circle boundary. See #LineTypes
 @param shift Number of fractional bits in the coordinates of the center and in the radius value.
  */
-CV_EXPORTS_W void circle(InputOutputArray img, Point center, int radius,
+CV_EXPORTS_W void circle(InputOutputArray imgBin, Point center, int radius,
                        const Scalar& color, int thickness = 1,
                        int lineType = LINE_8, int shift = 0);
 
@@ -4535,7 +4535,7 @@ a filled ellipse sector is to be drawn.
 @param lineType Type of the ellipse boundary. See #LineTypes
 @param shift Number of fractional bits in the coordinates of the center and values of axes.
  */
-CV_EXPORTS_W void ellipse(InputOutputArray img, Point center, Size axes,
+CV_EXPORTS_W void ellipse(InputOutputArray imgBin, Point center, Size axes,
                         double angle, double startAngle, double endAngle,
                         const Scalar& color, int thickness = 1,
                         int lineType = LINE_8, int shift = 0);
@@ -4549,7 +4549,7 @@ an ellipse inscribed in the rotated rectangle.
 a filled ellipse sector is to be drawn.
 @param lineType Type of the ellipse boundary. See #LineTypes
 */
-CV_EXPORTS_W void ellipse(InputOutputArray img, const RotatedRect& box, const Scalar& color,
+CV_EXPORTS_W void ellipse(InputOutputArray imgBin, const RotatedRect& box, const Scalar& color,
                         int thickness = 1, int lineType = LINE_8);
 
 /* ----------------------------------------------------------------------------------------- */
@@ -4569,7 +4569,7 @@ marker types are supported, see #MarkerTypes for more information.
 @param line_type Type of the line, See #LineTypes
 @param markerSize The length of the marker axis [default = 20 pixels]
  */
-CV_EXPORTS_W void drawMarker(InputOutputArray img, Point position, const Scalar& color,
+CV_EXPORTS_W void drawMarker(InputOutputArray imgBin, Point position, const Scalar& color,
                              int markerType = MARKER_CROSS, int markerSize=20, int thickness=1,
                              int line_type=8);
 
@@ -4590,12 +4590,12 @@ twice at the most (though, its top-most and/or the bottom edge could be horizont
 @param lineType Type of the polygon boundaries. See #LineTypes
 @param shift Number of fractional bits in the vertex coordinates.
  */
-CV_EXPORTS_W void fillConvexPoly(InputOutputArray img, InputArray points,
+CV_EXPORTS_W void fillConvexPoly(InputOutputArray imgBin, InputArray points,
                                  const Scalar& color, int lineType = LINE_8,
                                  int shift = 0);
 
 /** @overload */
-CV_EXPORTS void fillConvexPoly(InputOutputArray img, const Point* pts, int npts,
+CV_EXPORTS void fillConvexPoly(InputOutputArray imgBin, const Point* pts, int npts,
                                const Scalar& color, int lineType = LINE_8,
                                int shift = 0);
 
@@ -4617,12 +4617,12 @@ parts), and so forth.
 @param shift Number of fractional bits in the vertex coordinates.
 @param offset Optional offset of all points of the contours.
  */
-CV_EXPORTS_W void fillPoly(InputOutputArray img, InputArrayOfArrays pts,
+CV_EXPORTS_W void fillPoly(InputOutputArray imgBin, InputArrayOfArrays pts,
                            const Scalar& color, int lineType = LINE_8, int shift = 0,
                            Point offset = Point() );
 
 /** @overload */
-CV_EXPORTS void fillPoly(InputOutputArray img, const Point** pts,
+CV_EXPORTS void fillPoly(InputOutputArray imgBin, const Point** pts,
                          const int* npts, int ncontours,
                          const Scalar& color, int lineType = LINE_8, int shift = 0,
                          Point offset = Point() );
@@ -4640,12 +4640,12 @@ the function draws a line from the last vertex of each curve to its first vertex
 
 The function cv::polylines draws one or more polygonal curves.
  */
-CV_EXPORTS_W void polylines(InputOutputArray img, InputArrayOfArrays pts,
+CV_EXPORTS_W void polylines(InputOutputArray imgBin, InputArrayOfArrays pts,
                             bool isClosed, const Scalar& color,
                             int thickness = 1, int lineType = LINE_8, int shift = 0 );
 
 /** @overload */
-CV_EXPORTS void polylines(InputOutputArray img, const Point* const* pts, const int* npts,
+CV_EXPORTS void polylines(InputOutputArray imgBin, const Point* const* pts, const int* npts,
                           int ncontours, bool isClosed, const Scalar& color,
                           int thickness = 1, int lineType = LINE_8, int shift = 0 );
 
@@ -4765,7 +4765,7 @@ example.
 @param bottomLeftOrigin When true, the image data origin is at the bottom-left corner. Otherwise,
 it is at the top-left corner.
  */
-CV_EXPORTS_W void putText( InputOutputArray img, const String& text, Point org,
+CV_EXPORTS_W void putText( InputOutputArray imgBin, const String& text, Point org,
                          int fontFace, double fontScale, Scalar color,
                          int thickness = 1, int lineType = LINE_8,
                          bool bottomLeftOrigin = false );
@@ -4880,10 +4880,10 @@ public:
     @param leftToRight If true, the line is traversed from the leftmost endpoint to the rightmost
     endpoint. Otherwise, the line is traversed from \p pt1 to \p pt2.
     */
-    LineIterator( const Mat& img, Point pt1, Point pt2,
+    LineIterator( const Mat& imgBin, Point pt1, Point pt2,
                   int connectivity = 8, bool leftToRight = false )
     {
-        init(&img, Rect(0, 0, img.cols, img.rows), pt1, pt2, connectivity, leftToRight);
+        init(&imgBin, Rect(0, 0, imgBin.cols, imgBin.rows), pt1, pt2, connectivity, leftToRight);
         ptmode = false;
     }
     LineIterator( Point pt1, Point pt2,
@@ -4909,7 +4909,7 @@ public:
         init(0, boundingAreaRect, pt1, pt2, connectivity, leftToRight);
         ptmode = true;
     }
-    void init(const Mat* img, Rect boundingAreaRect, Point pt1, Point pt2, int connectivity, bool leftToRight);
+    void init(const Mat* imgBin, Rect boundingAreaRect, Point pt1, Point pt2, int connectivity, bool leftToRight);
 
     /** @brief Returns pointer to the current pixel.
     */

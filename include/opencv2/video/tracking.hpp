@@ -118,7 +118,7 @@ constructed without the gradients then calcOpticalFlowPyrLK will calculate them 
 to force data copying.
 @return number of levels in constructed pyramid. Can be less than maxLevel.
  */
-CV_EXPORTS_W int buildOpticalFlowPyramid( InputArray img, OutputArrayOfArrays pyramid,
+CV_EXPORTS_W int buildOpticalFlowPyramid( InputArray imgBin, OutputArrayOfArrays pyramid,
                                           Size winSize, int maxLevel, bool withDerivatives = true,
                                           int pyrBorder = BORDER_REFLECT_101,
                                           int derivBorder = BORDER_CONSTANT,

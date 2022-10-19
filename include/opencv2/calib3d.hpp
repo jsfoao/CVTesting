@@ -1274,7 +1274,7 @@ CV_EXPORTS_W bool findChessboardCorners( InputArray image, Size patternSize, Out
    Checks whether the image contains chessboard of the specific size or not.
    If yes, nonzero value is returned.
 */
-CV_EXPORTS_W bool checkChessboard(InputArray img, Size size);
+CV_EXPORTS_W bool checkChessboard(InputArray imgBin, Size size);
 
 /** @brief Finds the positions of internal corners of the chessboard using a sector based approach.
 
@@ -1370,7 +1370,7 @@ CV_EXPORTS_W Scalar estimateChessboardSharpness(InputArray image, Size patternSi
 
 
 //! finds subpixel-accurate positions of the chessboard corners
-CV_EXPORTS_W bool find4QuadCornerSubpix( InputArray img, InputOutputArray corners, Size region_size );
+CV_EXPORTS_W bool find4QuadCornerSubpix( InputArray imgBin, InputOutputArray corners, Size region_size );
 
 /** @brief Renders the detected chessboard corners.
 
@@ -2892,7 +2892,7 @@ disparity map, where disparity values are multiplied by 16, this scale factor sh
 account when specifying this parameter value.
 @param buf The optional temporary buffer to avoid memory allocation within the function.
  */
-CV_EXPORTS_W void filterSpeckles( InputOutputArray img, double newVal,
+CV_EXPORTS_W void filterSpeckles( InputOutputArray imgBin, double newVal,
                                   int maxSpeckleSize, double maxDiff,
                                   InputOutputArray buf = noArray() );
 

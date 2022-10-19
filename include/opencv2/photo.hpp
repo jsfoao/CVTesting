@@ -504,7 +504,7 @@ public:
     @param tb median threshold bitmap
     @param eb exclude bitmap
      */
-    CV_WRAP virtual void computeBitmaps(InputArray img, OutputArray tb, OutputArray eb) = 0;
+    CV_WRAP virtual void computeBitmaps(InputArray imgBin, OutputArray tb, OutputArray eb) = 0;
 
     CV_WRAP virtual int getMaxBits() const = 0;
     CV_WRAP virtual void setMaxBits(int max_bits) = 0;

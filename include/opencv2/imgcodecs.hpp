@@ -264,15 +264,15 @@ It also demonstrates how to save multiple images in a TIFF file:
 @param img (Mat or vector of Mat) Image or Images to be saved.
 @param params Format-specific parameters encoded as pairs (paramId_1, paramValue_1, paramId_2, paramValue_2, ... .) see cv::ImwriteFlags
 */
-CV_EXPORTS_W bool imwrite( const String& filename, InputArray img,
+CV_EXPORTS_W bool imwrite( const String& filename, InputArray imgBin,
               const std::vector<int>& params = std::vector<int>());
 
 /// @overload multi-image overload for bindings
 CV_WRAP static inline
-bool imwritemulti(const String& filename, InputArrayOfArrays img,
+bool imwritemulti(const String& filename, InputArrayOfArrays imgBin,
                   const std::vector<int>& params = std::vector<int>())
 {
-    return imwrite(filename, img, params);
+    return imwrite(filename, imgBin, params);
 }
 
 /** @brief Reads an image from a buffer in memory.
@@ -306,7 +306,7 @@ result. See cv::imwrite for the list of supported formats and flags description.
 @param buf Output buffer resized to fit the compressed image.
 @param params Format-specific parameters. See cv::imwrite and cv::ImwriteFlags.
 */
-CV_EXPORTS_W bool imencode( const String& ext, InputArray img,
+CV_EXPORTS_W bool imencode( const String& ext, InputArray imgBin,
                             CV_OUT std::vector<uchar>& buf,
                             const std::vector<int>& params = std::vector<int>());
 

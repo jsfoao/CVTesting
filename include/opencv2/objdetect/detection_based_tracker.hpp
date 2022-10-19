@@ -212,7 +212,7 @@ class CV_EXPORTS DetectionBasedTracker
         void updateTrackedObjects(const std::vector<cv::Rect>& detectedObjects);
         cv::Rect calcTrackedObjectPositionToShow(int i) const;
         cv::Rect calcTrackedObjectPositionToShow(int i, ObjectStatus& status) const;
-        void detectInRegion(const cv::Mat& img, const cv::Rect& r, std::vector<cv::Rect>& detectedObjectsInRegions);
+        void detectInRegion(const cv::Mat& imgBin, const cv::Rect& r, std::vector<cv::Rect>& detectedObjectsInRegions);
 };
 
 //! @}

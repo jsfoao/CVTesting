@@ -82,7 +82,7 @@ public:
     @param mask Source image mask
     @param tl Source image top-left corners
      */
-    CV_WRAP virtual void feed(InputArray img, InputArray mask, Point tl);
+    CV_WRAP virtual void feed(InputArray imgBin, InputArray mask, Point tl);
     /** @brief Blends and returns the final pano.
 
     @param dst Final pano
@@ -106,7 +106,7 @@ public:
     CV_WRAP void setSharpness(float val) { sharpness_ = val; }
 
     CV_WRAP void prepare(Rect dst_roi) CV_OVERRIDE;
-    CV_WRAP void feed(InputArray img, InputArray mask, Point tl) CV_OVERRIDE;
+    CV_WRAP void feed(InputArray imgBin, InputArray mask, Point tl) CV_OVERRIDE;
     CV_WRAP void blend(InputOutputArray dst, InputOutputArray dst_mask) CV_OVERRIDE;
 
     //! Creates weight maps for fixed set of source images by their masks and top-left corners.
@@ -133,7 +133,7 @@ public:
     CV_WRAP void setNumBands(int val) { actual_num_bands_ = val; }
 
     CV_WRAP void prepare(Rect dst_roi) CV_OVERRIDE;
-    CV_WRAP void feed(InputArray img, InputArray mask, Point tl) CV_OVERRIDE;
+    CV_WRAP void feed(InputArray imgBin, InputArray mask, Point tl) CV_OVERRIDE;
     CV_WRAP void blend(CV_IN_OUT InputOutputArray dst, CV_IN_OUT InputOutputArray dst_mask) CV_OVERRIDE;
 
 private:
@@ -169,8 +169,8 @@ void CV_EXPORTS_W normalizeUsingWeightMap(InputArray weight, CV_IN_OUT InputOutp
 
 void CV_EXPORTS_W createWeightMap(InputArray mask, float sharpness, CV_IN_OUT InputOutputArray weight);
 
-void CV_EXPORTS_W createLaplacePyr(InputArray img, int num_levels, CV_IN_OUT std::vector<UMat>& pyr);
-void CV_EXPORTS_W createLaplacePyrGpu(InputArray img, int num_levels, CV_IN_OUT std::vector<UMat>& pyr);
+void CV_EXPORTS_W createLaplacePyr(InputArray imgBin, int num_levels, CV_IN_OUT std::vector<UMat>& pyr);
+void CV_EXPORTS_W createLaplacePyrGpu(InputArray imgBin, int num_levels, CV_IN_OUT std::vector<UMat>& pyr);
 
 // Restores source image
 void CV_EXPORTS_W restoreImageFromLaplacePyr(CV_IN_OUT std::vector<UMat>& pyr);

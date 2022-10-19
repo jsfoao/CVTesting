@@ -525,11 +525,11 @@ selection rectangle will correspont to the initial mouse position.
 @note The function sets it's own mouse callback for specified window using cv::setMouseCallback(windowName, ...).
 After finish of work an empty callback will be set for the used window.
  */
-CV_EXPORTS_W Rect selectROI(const String& windowName, InputArray img, bool showCrosshair = true, bool fromCenter = false);
+CV_EXPORTS_W Rect selectROI(const String& windowName, InputArray imgBin, bool showCrosshair = true, bool fromCenter = false);
 
 /** @overload
  */
-CV_EXPORTS_W Rect selectROI(InputArray img, bool showCrosshair = true, bool fromCenter = false);
+CV_EXPORTS_W Rect selectROI(InputArray imgBin, bool showCrosshair = true, bool fromCenter = false);
 
 /** @brief Allows users to select multiple ROIs on the given image.
 
@@ -547,7 +547,7 @@ selection rectangle will correspont to the initial mouse position.
 @note The function sets it's own mouse callback for specified window using cv::setMouseCallback(windowName, ...).
 After finish of work an empty callback will be set for the used window.
  */
-CV_EXPORTS_W void selectROIs(const String& windowName, InputArray img,
+CV_EXPORTS_W void selectROIs(const String& windowName, InputArray imgBin,
                              CV_OUT std::vector<Rect>& boundingBoxes, bool showCrosshair = true, bool fromCenter = false);
 
 /** @brief Creates a trackbar and attaches it to the specified window.
@@ -760,7 +760,7 @@ The function addText draws *text* on the image *img* using a specific font *font
 @param org Point(x,y) where the text should start on an image.
 @param font Font to use to draw a text.
  */
-CV_EXPORTS void addText( const Mat& img, const String& text, Point org, const QtFont& font);
+CV_EXPORTS void addText( const Mat& imgBin, const String& text, Point org, const QtFont& font);
 
 /** @brief Draws a text on the image.
 
@@ -776,7 +776,7 @@ font is set to a system-dependent default value. Generally, this is 12 points.
 @param style Font style. Available operation flags are : cv::QtFontStyles
 @param spacing Spacing between characters. It can be negative or positive.
  */
-CV_EXPORTS_W void addText(const Mat& img, const String& text, Point org, const String& nameFont, int pointSize = -1, Scalar color = Scalar::all(0),
+CV_EXPORTS_W void addText(const Mat& imgBin, const String& text, Point org, const String& nameFont, int pointSize = -1, Scalar color = Scalar::all(0),
         int weight = QT_FONT_NORMAL, int style = QT_STYLE_NORMAL, int spacing = 0);
 
 /** @brief Displays a text on a window image as an overlay for a specified duration.
