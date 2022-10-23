@@ -5,29 +5,33 @@ using namespace cv;
 using namespace cvext;
 using namespace std;
 
-#define NUM_IMAGES 1
+#define NUM_IMAGES 19
 
 int main()
 {
     tesseract::TessBaseAPI* api = new tesseract::TessBaseAPI();
-    if (api->Init("tesseract-ocr\\tessdata", "eng"))
+    if (api->Init("tesseract-ocr\\tessdata", "eng", tesseract::OEM_DEFAULT))
     {
         std::cout << "Could not initialize Tesseract!" << std::endl;
         exit(1);
     }
 
-    api->SetPageSegMode(tesseract::PageSegMode::PSM_SINGLE_CHAR);
+    api->SetVariable("tessedit_char_whitelist", "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789");
+    api->SetPageSegMode(tesseract::PageSegMode::PSM_SINGLE_BLOCK);
 
-
+    //String path = "content\\"+to_string(i)+".jpg";
     String path = "content\\19.jpg";
-    //String path = "content\\" + to_string(i) + ".jpg";
     Mat imgBin = imread(path);
-    //Mat imgGreyPre = ;
+
+    /*
+    * FINDING LICENSE PLATE IN IMAGE
+    */
     Mat imgGrey = RgbToGrey(imgBin);
     Mat imgAvg = Average(imgGrey, 1);
-    Mat imgEdge = Edge(imgAvg, 50);
+    Mat imgEdge = Edge(imgAvg, 60);
     Mat imgErosion = Erosion(imgEdge, 1);
     Mat imgDilated = Dilation(imgErosion, 15);
+    imgDilated = HorizontalDilation(imgDilated, 5);
 
     imshow("Grey", imgGrey);
     imshow("Final", imgDilated);
@@ -37,7 +41,6 @@ int main()
     Rect rect;
     Scalar black = CV_RGB(0, 0, 0);
 
-    // Segmentation
     std::vector<std::vector<Point>> contours1;
     vector<Vec4i> hierachy1;
     findContours(dilated_cpy, contours1, hierachy1, RETR_EXTERNAL, CHAIN_APPROX_NONE, Point(0, 0));
@@ -52,43 +55,24 @@ int main()
         }
     }
 
-    // Bounding box detection
     for (int i = 0; i < contours1.size(); i++)
     {
         rect = boundingRect(contours1[i]);
 
         float ratio = ((float)rect.width / (float)rect.height);
 
-        bool too_small = rect.width < 40 || rect.height < 20;
-        bool too_big = rect.width > 300 || rect.height > 150;
-        bool ratio_big = ratio > 20;
-        bool ratio_small = ratio < 2;
+        bool too_small = rect.width < 50 || rect.height < 20;
+        bool too_big = rect.width > 350 || rect.height > 80;
+        bool ratio_small = ratio < 1.5;
         bool outsideROI = rect.x < 0.1 * imgGrey.cols || rect.x > 0.9 * imgGrey.cols || rect.y < 0.1 * imgGrey.rows || rect.y > 0.9 * imgGrey.rows;
 
-        if (too_small || too_big || outsideROI || ratio_big || ratio_small)
+        if (too_small || too_big || outsideROI || ratio_small)
         {
             drawContours(dilated_cpy, contours1, i, black, -1, 8, hierachy1);
         }
         else
         {
             plate = imgGrey(rect);
-
-            //Mat addImg = imgDilated(rect);
-            //Mat addImgGrey = imgGrey(rect);
-
-            //float focusAmount = 0.3;
-            //Point2i p1 = Point2i(rect.x + rect.width * focusAmount, rect.y + rect.height * focusAmount);
-            //Point2i p2 = Point2i(rect.x + rect.width - (rect.width * focusAmount), rect.y + rect.height - (rect.height * focusAmount));
-            //Rect focusRect(p1, p2);
-
-            //float edgeFill = FillRatio(imgEdge(focusRect));
-            //float fill = FillRatio(addImg);
-            //if (fill > 0.7 && edgeFill > 0.15)
-            //{
-            //    list.push_back(ImgInfo(addImg, addImgGrey, ratio, fill));
-            //    imshow("ye " + i, imgEdge(focusRect));
-            //    std::cout << "Edge " << i << ": " << edgeFill << std::endl;
-            //}
         }
     }
 
@@ -101,13 +85,26 @@ int main()
     else
     {
         std::cout << "No valid plate found" << std::endl;
+        return 0;
     }
 
+    /*
+    * FINDING CHARACTERS IN LICENSE PLATE
+    */
+    // Plate grey processing
+    resize(plate, plate, Size(plate.size().width * 4, plate.size().height * 4), 0, 0, cv::INTER_LINEAR);
     int otsuTh = OTSU(plate);
-    Mat binPlate = GreyToBinary(plate, otsuTh);
+    imshow("Grey plate", plate);
 
-    imshow("Binary plate", binPlate);
+    int finalOtsu = otsuTh + 60;
+    if (finalOtsu > 220)
+    {
+        finalOtsu = 220;
+    }
+    Mat binPlate = Step(plate, finalOtsu, 255);
+    imshow("Processed plate", binPlate);
 
+    // Segmenting characters in plate
     Mat plateCpy;
     plateCpy = binPlate.clone();
     vector<vector<Point>> contours2;
@@ -127,7 +124,7 @@ int main()
     imshow("Segmented plate", dst2);
 
     vector<CharBox> charList;
-    char* outText;
+
     for (int i = 0; i < contours2.size(); i++)
     {
         rect = boundingRect(contours2[i]);
@@ -135,38 +132,47 @@ int main()
         bool min_ratio = ratio < 0.5;
         bool max_ratio = ratio > 2;
 
-        if (rect.height < 5 || min_ratio || max_ratio)
+        if (rect.height < 20 || rect.height > 100 || min_ratio || max_ratio)
         {
             drawContours(plateCpy, contours2, i, black, -1, 8, hierarchy2);
         }
         else
         {
             Mat plateChar;
-            plateChar = binPlate(rect);
 
-            Mat charBordered = CopyWithBorder(plateChar, 10);
+            // Char grey
+            plateChar = plate(rect);
+            resize(plateChar, plateChar, Size(plateChar.size().width * 4, plateChar.size().height * 4), 0, 0, cv::INTER_LINEAR);
+            plateChar = Average(plateChar, 3);
+            plateChar = Step(plateChar, 200, 255);
+            plateChar = CopyWithBorder(plateChar, 15);
 
-            imshow("char" + to_string(i), charBordered);
-
-            api->SetImage(charBordered.data, charBordered.cols, charBordered.rows, charBordered.channels(), charBordered.step1());
+            api->SetImage(plateChar.data, plateChar.cols, plateChar.rows, 1, plateChar.step);
+            char* outText;
             outText = api->GetUTF8Text();
 
-            std::cout << "-------------" << std::endl;
-            std::cout << "Char " << to_string(i) << ": " << outText << std::endl;
-            std::cout << "Pos " << to_string(i) << ": " << rect.x << std::endl;
-            std::cout << "-------------" << std::endl;
+            CharBox currChar(*outText, rect.x, rect.y);
 
-            CharBox currChar(outText, rect.x, rect.y);
             charList.push_back(currChar);
+            imshow("Char" + to_string(i), plateChar);
         }
     }
 
-    char* finalCharPlate = SortedCharBox(charList);
-    std::cout << finalCharPlate << std::endl;
+    /*
+    * SORTING CHARACTERS AND PRINTING LICENSE PLATE
+    */
+    char* output = SortedCharBox(charList); /*= SortedCharBox(charList);*/
 
+    std::cout << "Plate: ";
+    for (size_t i = 0; i < charList.size(); i++)
+    {
+        std::cout << output[i];
+    }
+    std::cout << std::endl;
     waitKey();
 
-    //api->End();
-    //delete api;
-    //delete[] outText;
+    waitKey();
+    api->End();
+    delete api;
+    delete[] output;
 }

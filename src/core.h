@@ -19,17 +19,19 @@ namespace cvext
     // Binary
     struct CharBox
     {
-        char* Char;
+        char Char;
         int x;
         int y;
 
-        CharBox(char* character, int x, int y)
+        CharBox(char character, int x, int y)
         {
             Char = character;
             this->x = x;
             this->y = y;
         }
     };
+
+    float FillRatio(Mat img);
 
     Mat RgbToGrey(Mat rgb)
     {
@@ -291,6 +293,37 @@ namespace cvext
         return output;
     }
 
+    Mat HorizontalDilation(Mat imgBin, int range = 1)
+    {
+        Mat output = Mat::zeros(imgBin.size(), CV_8UC1);
+
+        for (int i = range; i < imgBin.rows - range; i++)
+        {
+            for (int j = range; j < imgBin.cols - range; j++)
+            {
+                // skip if pixel is already white
+                if (imgBin.at<uchar>(i, j) == 255)
+                {
+                    output.at<uchar>(i, j) = 255;
+                    continue;
+                }
+
+                for (int jj = -range; jj <= range; jj++)
+                {
+                    int value = imgBin.at<uchar>(i, j + jj);
+
+                    // make pixel white if it has white neighbours
+                    if (value == 255)
+                    {
+                        output.at<uchar>(i, j) = 255;
+                        break;
+                    }
+                }
+            }
+        }
+        return output;
+    }
+
     Mat EqHist(Mat img)
     {
         Mat EQImg = Mat::zeros(img.size(), CV_8UC1);
@@ -363,6 +396,20 @@ namespace cvext
 
         return index + 30;
 
+    }
+
+    int StepFillTh(Mat img, int min = 160, int max = 240)
+    {
+        float fill = FillRatio(img);
+        int output = (fill * 255) + 40;
+
+        if (output > 240)
+            output = 240;
+
+        if (output < 160)
+            output = 160;
+
+        return output;
     }
 
     Mat Erosion(Mat imgBin, int range = 1)
@@ -449,58 +496,6 @@ namespace cvext
         }
     };
 
-
-    Mat Segmentation(Mat imgBin)
-    {
-        Mat ID = Mat::zeros(imgBin.size(), CV_8UC1);
-
-        int id = 1;
-        for (int i = 1; i < imgBin.rows - 1; i++)
-        {
-            for (int j = 1; j < imgBin.cols - 1; j++)
-            {
-                // Iterate through white pixels only
-                if (imgBin.at<uchar>(i, j) == 0)
-                    continue;
-
-                Pixel lPix(imgBin.at<uchar>(i, j - 1), ID.at<uchar>(i, j - 1));
-                Pixel tPix(imgBin.at<uchar>(i - 1, j), ID.at<uchar>(i - 1, j));
-
-                if (lPix.ID == NULL && tPix.ID == NULL)
-                {
-                    ID.at<uchar>(i, j) = id;
-                    id++;
-                }
-
-                if (lPix.ID != NULL && tPix.ID == NULL)
-                {
-                    ID.at<uchar>(i, j) = lPix.ID;
-                }
-                
-                if (lPix.ID == NULL && tPix.ID != NULL)
-                {
-                    ID.at<uchar>(i, j) = tPix.ID;
-                }
-
-                if (lPix.ID != NULL && tPix.ID != NULL)
-                {
-                    if (lPix.ID <= tPix.ID)
-                    {
-                        ID.at<uchar>(i, j) = lPix.ID;
-                    }
-                    else if (tPix.ID < lPix.ID)
-                    {
-                        ID.at<uchar>(i, j) = tPix.ID;
-                    }
-                }
-            }
-        }
-
-        std::cout << "Unique IDs: " << id - 1 << std::endl;
-
-        return ID;
-    }
-
     Mat IDToGrey(Mat imgBin)
     {
         Mat output = Mat::zeros(imgBin.size(), CV_8UC1);
@@ -586,9 +581,6 @@ namespace cvext
             for (int j = 0; j < img.cols; j++)
             {
                 int value = img.at<uchar>(i, j);
-                if (value != 255)
-                    continue;
-
                 output.at<uchar>(i + border, j + border) = value;
             }
         }
@@ -610,35 +602,32 @@ namespace cvext
 
     char* SortedCharBox(vector<CharBox> charBox)
     {
-        char* output = new char[charBox.size() - 1];
-        vector<int> addedIndices;
+        char* output = new char[charBox.size()]{};
+        vector<CharBox> charBoxCpy = charBox;
         int min = 9999;
         int k = 0;
         int minIndex = -1;
+        char minChar;
         
-        for (int i = 0; i < charBox.size(); i++)
+        while (k != charBox.size())
         {
-            if (IsAdded(i, addedIndices))
+            for (int i = 0; i < charBoxCpy.size(); i++)
             {
-                continue;
-            }
 
-            int value = charBox[i].x;
-            if (value < min)
-            {
-                min = value;
-                minIndex = i;
+                int value = charBoxCpy[i].x;
+                if (value < min)
+                {
+                    min = value;
+                    minIndex = i;
+                    minChar = charBoxCpy[minIndex].Char;
+                }
             }
-
-            if (i == charBox.size() - 1 && k != charBox.size() - 1)
-            {
-                addedIndices.push_back(minIndex);
-                i = 0;
-                k++;
-                min = 9999;
-            }
+            output[k] = minChar;
+            charBoxCpy.erase(charBoxCpy.begin() + minIndex);
+            minIndex = -1;
+            k++;
+            min = 9999;
         }
-
         return output;
     }
 };
